@@ -43,17 +43,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent i = new Intent(MainActivity.this, EditActivity.class);
-//                startActivity(i);
-                AppExecutor.getInstance().getDiscIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Client client = new Client("Иван", "Егоров", "543554", 1, "testDisc", 0);
-                        myDB.clientDAO().insertClient(client);
-                    }
-                });
-
-
+                Intent i = new Intent(MainActivity.this, EditActivity.class);
+                startActivity(i);
             }
         });
 
