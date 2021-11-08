@@ -3,8 +3,10 @@ package com.example.clientlist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.Toast;
 
 import com.example.clientlist.database.AppDataBase;
 import com.example.clientlist.database.AppExecutor;
@@ -14,6 +16,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
+import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -26,11 +30,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private AppDataBase myDB;
     private DataAdapter adapter;
     private List<Client> listClient;
     private RecyclerView recyclerView;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
+        NavigationView nav_view = findViewById(R.id.nav_view);
+        drawerLayout  = findViewById(R.id.drawer_layout);
+        nav_view.setNavigationItemSelectedListener(this);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,4 +85,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.id_client)
+        {
+            Toast.makeText(this,"Client pull", Toast.LENGTH_SHORT).show();
+        }
+        drawerLayout.closeDrawer(GravityCompat.START );
+        return true;
+    }
 }
