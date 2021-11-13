@@ -12,6 +12,7 @@ import com.example.clientlist.database.AppDataBase;
 import com.example.clientlist.database.AppExecutor;
 import com.example.clientlist.database.Client;
 import com.example.clientlist.database.DataAdapter;
+import com.example.clientlist.utils.Constans;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<Client> listClient;
     private RecyclerView recyclerView;
     private DrawerLayout drawerLayout;
+    private DataAdapter.AdapterOnItemClicked adapterOnItemClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +48,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
         NavigationView nav_view = findViewById(R.id.nav_view);
-        drawerLayout  = findViewById(R.id.drawer_layout);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        adapterOnItemClicked = new DataAdapter.AdapterOnItemClicked() {
+            @Override
+            public void onAdapterItemClicked(int position) {
+                Intent intent = new Intent(MainActivity.this, EditActivity.class);
+                intent.putExtra(Constans.NAME_KEY, listClient.get(position).getName());
+                intent.putExtra(Constans.SEC_NAME_KEY, listClient.get(position).getSec_name());
+                intent.putExtra(Constans.TEL_KEY, listClient.get(position).getNumber());
+                intent.putExtra(Constans.DESC_KEY, listClient.get(position).getDiscription());
+                intent.putExtra(Constans.IMPORTANCE_KEY, listClient.get(position).getImportance());
+                intent.putExtra(Constans.SP_KEY, listClient.get(position).getSpecial());
+                intent.putExtra(Constans.ID_KEY, listClient.get(position).getId());
+                startActivity(intent);
+            }
+        };
         nav_view.setNavigationItemSelectedListener(this);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 AppExecutor.getInstance().getDiscIO().execute(new Runnable() {
                     @Override
                     public void run() {
-                        adapter = new DataAdapter(listClient);
+                        adapter = new DataAdapter(listClient, adapterOnItemClicked);
                         recyclerView.setAdapter(adapter);
                     }
                 });
@@ -88,11 +104,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.id_client)
-        {
-            Toast.makeText(this,"Client pull", Toast.LENGTH_SHORT).show();
+        if (id == R.id.id_client) {
+            Toast.makeText(this, "Client pull", Toast.LENGTH_SHORT).show();
         }
-        drawerLayout.closeDrawer(GravityCompat.START );
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 }
