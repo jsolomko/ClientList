@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,6 +28,9 @@ public class EditActivity extends AppCompatActivity {
     private int importance = 3;
     private int special = 0;
     private FloatingActionButton fb;
+    private boolean isEdit = false;
+    private boolean new_user = false;
+    private int id;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,9 +48,18 @@ public class EditActivity extends AppCompatActivity {
                     AppExecutor.getInstance().getDiscIO().execute(new Runnable() {
                         @Override
                         public void run() {
-                            Client client = new Client(edName.getText().toString(), edSecName.getText().toString(),
-                                    edTel.getText().toString(), importance, edDisc.getText().toString(), special);
-                            myDB.clientDAO().insertClient(client);
+                            if (isEdit) {
+
+                                Client client = new Client(edName.getText().toString(), edSecName.getText().toString(),
+                                        edTel.getText().toString(), importance, edDisc.getText().toString(), special);
+                                client.setId(id);
+                                myDB.clientDAO().updateClient(client);
+
+                            } else {
+                                Client client = new Client(edName.getText().toString(), edSecName.getText().toString(),
+                                        edTel.getText().toString(), importance, edDisc.getText().toString(), special);
+                                myDB.clientDAO().insertClient(client);
+                            }
                         }
                     });
                 }
@@ -70,25 +85,11 @@ public class EditActivity extends AppCompatActivity {
         Intent i = getIntent();
         if (i != null) {
             if (i.getStringExtra(Constans.NAME_KEY) != null) {
-                fb.hide();
-                ckImp1.setClickable(false);
-                ckImp2.setClickable(false);
-                ckImp3.setClickable(false);
+
+                setIsEdit(false);
                 cbArray[0] = ckImp1;
                 cbArray[1] = ckImp2;
                 cbArray[2] = ckImp3;
-                ckSpecial.setClickable(false);
-                edName.setClickable(false);
-                edSecName.setClickable(false);
-                edTel.setClickable(false);
-                edDisc.setClickable(false);
-                edDisc.setClickable(false);
-                edName.setFocusable(false);
-                edSecName.setFocusable(false);
-                edTel.setFocusable(false);
-                edDisc.setFocusable(false);
-
-
                 edName.setText(i.getStringExtra(Constans.NAME_KEY));
                 edSecName.setText(i.getStringExtra(Constans.SEC_NAME_KEY));
                 edTel.setText(i.getStringExtra(Constans.TEL_KEY));
@@ -96,9 +97,28 @@ public class EditActivity extends AppCompatActivity {
                 edName.setText(i.getStringExtra(Constans.NAME_KEY));
 
                 cbArray[i.getIntExtra(Constans.IMPORTANCE_KEY, 0)].setChecked(true);
-                if (i.getIntExtra(Constans.SP_KEY, 0) ==1)ckSpecial.setChecked(true);
+                if (i.getIntExtra(Constans.SP_KEY, 0) == 1) ckSpecial.setChecked(true);
+                new_user = false;
+                id = i.getIntExtra(Constans.ID_KEY, 0);
+            } else {
+                new_user = true;
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (!new_user) getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.id_edit) {
+            setIsEdit(true);
+        }
+        return true;
     }
 
     public void onClickCh1(View view) {
@@ -114,6 +134,29 @@ public class EditActivity extends AppCompatActivity {
     public void onClickCh3(View view) {
         ckImp1.setChecked(false);
         ckImp2.setChecked(false);
+    }
+
+    private void setIsEdit(boolean isEdit) {
+        if (isEdit) {
+            fb.show();
+
+        } else {
+            fb.hide();
+        }
+        this.isEdit = isEdit;
+        ckImp1.setClickable(isEdit);
+        ckImp2.setClickable(isEdit);
+        ckImp3.setClickable(isEdit);
+        ckSpecial.setClickable(isEdit);
+        edName.setClickable(isEdit);
+        edSecName.setClickable(isEdit);
+        edTel.setClickable(isEdit);
+        edDisc.setClickable(isEdit);
+        edDisc.setClickable(isEdit);
+        edName.setFocusable(isEdit);
+        edSecName.setFocusable(isEdit);
+        edTel.setFocusable(isEdit);
+        edDisc.setFocusable(isEdit);
     }
 
     private void getImportanceFromCh() {
