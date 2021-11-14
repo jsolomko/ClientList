@@ -1,17 +1,20 @@
 package com.example.clientlist;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.Adapter;
 import android.widget.Toast;
 
 import com.example.clientlist.database.AppDataBase;
 import com.example.clientlist.database.AppExecutor;
 import com.example.clientlist.database.Client;
 import com.example.clientlist.database.DataAdapter;
+import com.example.clientlist.settings.SettingsActivity;
 import com.example.clientlist.utils.Constans;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -29,6 +32,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -75,34 +79,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
     private void init() {
         recyclerView = findViewById(R.id.rView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         myDB = AppDataBase.getInstance(getApplicationContext());
+        listClient = new ArrayList<>();
+        adapter = new DataAdapter(listClient, adapterOnItemClicked,this);
+        recyclerView.setAdapter(adapter);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        init();
         AppExecutor.getInstance().getDiscIO().execute(new Runnable() {
             @Override
             public void run() {
                 listClient = myDB.clientDAO().getClientList();
-                AppExecutor.getInstance().getDiscIO().execute(new Runnable() {
+                AppExecutor.getInstance().getMainIO().execute(new Runnable() {
                     @Override
                     public void run() {
-                        adapter = new DataAdapter(listClient, adapterOnItemClicked);
-                        recyclerView.setAdapter(adapter);
+                        if (adapter != null) {
+                            adapter.updateAdapter(listClient);
+                        }
                     }
                 });
             }
         });
     }
 
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.id_client) {
             Toast.makeText(this, "Client pull", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.id_web) {
+            goTo("https://neco-dessarollo.es ");
+        }
+        else if (id == R.id.id_settings) {
+            Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(i);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void goTo(String url) {
+        Intent brIntent , chooser;
+        brIntent = new Intent(Intent.ACTION_VIEW);
+        brIntent.setData(Uri.parse(url));
+        chooser = Intent.createChooser(brIntent, "Открыть с ");
+        if (brIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(chooser);
+        }
+
     }
 }

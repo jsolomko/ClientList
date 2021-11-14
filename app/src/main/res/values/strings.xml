@@ -25,10 +25,20 @@
     <string name="web_page">Веб страница</string>
 
     <string name="edit">Редактировать</string>
+    <string name="delete">Удалить</string>
+    <string name="delete_message">Вы действительно хотите удалить клиента?</string>
+    <string name="уes">ДА</string>
+    <string name="no">НЕТ</string>
+    <string name="text_settings">Настройки текста</string>
 
+    <string name="text_color_name">Цвет имени клиента</string>
+    <string name="text_color_summary_name">Выберете цвет имени клиента</string>
 
-
-
+    <string name="text_color_sec_name">Цвет фамилии клиента</string>
+    <string name="text_color_summary_sec_name">Выберете цвет фамилии клиента</string>
+    <!--Keys -->
+    <string name="text_color_name_key">text_name_color_key</string>
+    <string name="text_color_sec_name_key">text_sec_name_color_key</string>
 
 
 </resources>

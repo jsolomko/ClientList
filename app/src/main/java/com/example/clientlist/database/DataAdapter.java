@@ -1,5 +1,8 @@
 package com.example.clientlist.database;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.clientlist.R;
@@ -19,10 +24,14 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolderData
     private List<Client> clientsListArray;
     private AdapterOnItemClicked adapterOnItemClicked;
     private int[] colorArray = {R.drawable.circle_green, R.drawable.circle_reed, R.drawable.circle_blue};
+    private Context context;
+    private SharedPreferences def_pref;
 
-    public DataAdapter(List<Client> clientsListArray, AdapterOnItemClicked adapterOnItemClicked) {
+    public DataAdapter(List<Client> clientsListArray, AdapterOnItemClicked adapterOnItemClicked, Context context) {
         this.clientsListArray = clientsListArray;
         this.adapterOnItemClicked = adapterOnItemClicked;
+        this.context = context;
+        def_pref = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @NonNull
@@ -64,6 +73,8 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolderData
         }
 
         public void setData(Client client) {
+            tvName.setTextColor(Color.parseColor(def_pref.getString(context.getResources().getString(R.string.text_color_name_key), "#000000")));
+            tvSecName.setTextColor(Color.parseColor(def_pref.getString(context.getResources().getString(R.string.text_color_sec_name_key), "#000000")));
             tvName.setText(client.getName());
             tvSecName.setText(client.getSec_name());
             tvTel.setText(client.getName());
@@ -80,5 +91,11 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolderData
 
     public interface AdapterOnItemClicked {
         void onAdapterItemClicked(int position);
+    }
+
+    public void updateAdapter(List<Client> clientList) {
+        clientsListArray.clear();
+        clientsListArray.addAll(clientList);
+        notifyDataSetChanged();
     }
 }

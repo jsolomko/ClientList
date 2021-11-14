@@ -1,5 +1,6 @@
 package com.example.clientlist;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.clientlist.database.AppDataBase;
@@ -49,16 +51,17 @@ public class EditActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             if (isEdit) {
-
                                 Client client = new Client(edName.getText().toString(), edSecName.getText().toString(),
                                         edTel.getText().toString(), importance, edDisc.getText().toString(), special);
                                 client.setId(id);
                                 myDB.clientDAO().updateClient(client);
-
+                                finish();
                             } else {
                                 Client client = new Client(edName.getText().toString(), edSecName.getText().toString(),
                                         edTel.getText().toString(), importance, edDisc.getText().toString(), special);
                                 myDB.clientDAO().insertClient(client);
+                                finish();
+
                             }
                         }
                     });
@@ -117,7 +120,7 @@ public class EditActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.id_edit) {
             setIsEdit(true);
-        }
+        } else if (id == R.id.delete) deleteDialog();
         return true;
     }
 
@@ -134,6 +137,34 @@ public class EditActivity extends AppCompatActivity {
     public void onClickCh3(View view) {
         ckImp1.setChecked(false);
         ckImp2.setChecked(false);
+    }
+
+    private void deleteDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_message);
+        builder.setTitle(R.string.delete);
+        builder.setPositiveButton(R.string.уes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                AppExecutor.getInstance().getDiscIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Client client = new Client(edName.getText().toString(), edSecName.getText().toString(),
+                                edTel.getText().toString(), importance, edDisc.getText().toString(), special);
+                        client.setId(id);
+                        myDB.clientDAO().deleteClient(client);
+                        finish();
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.show();
     }
 
     private void setIsEdit(boolean isEdit) {
@@ -157,6 +188,11 @@ public class EditActivity extends AppCompatActivity {
         edSecName.setFocusable(isEdit);
         edTel.setFocusable(isEdit);
         edDisc.setFocusable(isEdit);
+
+        edName.setFocusableInTouchMode(isEdit);
+        edSecName.setFocusableInTouchMode(isEdit);
+        edTel.setFocusableInTouchMode(isEdit);
+        edDisc.setFocusableInTouchMode(isEdit);
     }
 
     private void getImportanceFromCh() {
