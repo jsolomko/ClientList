@@ -10,13 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.clientlist.R;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -74,7 +71,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolderData
 
         public void setData(Client client) {
             tvName.setTextColor(Color.parseColor(def_pref.getString(context.getResources().getString(R.string.text_color_name_key), "#000000")));
-            tvSecName.setTextColor(Color.parseColor(def_pref.getString(context.getResources().getString(R.string.text_color_sec_name_key), "#000000")));
+            //tvSecName.setTextColor(Color.parseColor(def_pref.getString(context.getResources().getString(R.string.text_color_sec_name_key), "#000000")));
             tvName.setText(client.getName());
             tvSecName.setText(client.getSec_name());
             tvTel.setText(client.getName());
